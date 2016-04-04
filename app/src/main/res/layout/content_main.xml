@@ -11,9 +11,43 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.sqldexter.popularmovies.MainActivity"
     tools:showIn="@layout/activity_main">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/ll"
+        android:weightSum="2">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/spinner_title"
+            android:gravity="center"/>
+    <Spinner
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/sortBy"
+        android:layout_weight="1">
 
-    <TextView
+    </Spinner>
+    </LinearLayout>
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnWidth="100dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="@dimen/grid_spacing"
+        android:horizontalSpacing="@dimen/grid_spacing"
+        android:layout_below="@id/ll"
+        android:gravity="center"
+        android:id="@+id/movieGrid"
+        ></GridView>
+    <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:gravity="bottom"
+        android:id="@+id/apiProgressBar"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+    <!--android:stretchMode="columnWidth"-->
 </RelativeLayout>
