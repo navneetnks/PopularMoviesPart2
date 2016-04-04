@@ -95,7 +95,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d(LOG_TAG, "clicked on item="+position);
+        Intent intent=new Intent(this,MovieDetail.class);
+        intent.putExtra("movieObj",view.getTag().toString());
+        startActivity(intent);
+//        Log.d(LOG_TAG, "clicked on item="+position);
     }
 
     private class TaskThread extends AsyncTask<Void,Void,Void>{

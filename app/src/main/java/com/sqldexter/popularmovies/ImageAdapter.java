@@ -65,6 +65,7 @@ public class ImageAdapter extends BaseAdapter {
         }
         String imageUrl="http://image.tmdb.org/t/p/w185"+posterPath;
         Picasso.with(context).load(imageUrl).into(imageView);
+        imageView.setTag(item);
         return imageView;
 
     }
