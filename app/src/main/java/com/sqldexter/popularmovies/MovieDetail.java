@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 public class MovieDetail extends AppCompatActivity {
     private static final String TAG=MovieDetail.class.getSimpleName();
-    private ImageView imageView;
+    private ImageView imageView,imageBg;
     private TextView title,synopsis,rating,releaseDate;
     private JSONObject movieObj;
     @Override
@@ -25,6 +25,7 @@ public class MovieDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
         imageView=(ImageView)findViewById(R.id.detail_image);
+        imageBg=(ImageView)findViewById(R.id.detail_bg_image);
         title=(TextView)findViewById(R.id.title);
         synopsis=(TextView)findViewById(R.id.synopsis);
         rating=(TextView)findViewById(R.id.rating);
@@ -51,6 +52,8 @@ public class MovieDetail extends AppCompatActivity {
             rating.setText(movieObj.getString("vote_average"));
             synopsis.setText(movieObj.getString("overview") );
             Picasso.with(this).load(imageUrl).into(imageView);
+            imageBg.setAlpha(0.15f);
+            Picasso.with(this).load(imageUrl).into(imageBg);
         } catch (JSONException e) {
             e.printStackTrace();
         }

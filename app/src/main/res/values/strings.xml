@@ -8,7 +8,7 @@
         <item>Popular</item>
         <item>Rating</item>
     </string-array>
-    <string name="title_activity_movie_detail">MovieDetail</string>
+    <string name="title_activity_movie_detail">Movie Detail</string>
     <string name="title_label">Title</string>
     <string name="synopsis_label">Synopsis</string>
     <string name="rating_label">User Rating</string>

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private volatile JSONObject jsonObject;
     private Bundle savedInstance;
     private int spinnerPosition;
+    private boolean isSpinnerTouched=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,19 +69,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             displayData();
             Toast.makeText(this, "Status Restored", Toast.LENGTH_SHORT).show();
         }
+        sortBySpinner.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                isSpinnerTouched=true;
+                return false;
+            }
+        });
         sortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            int check=0;
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedOption = parent.getItemAtPosition(position).toString();
                 Log.d(TAG,"selectedOption="+selectedOption);
                 spinnerPosition=position;
-                check++;
-                if(check==1 && position==1)
-                    check--;
 
-                Log.d(TAG,"check="+check+"\tposition="+position);
-                if(check>1) {
+                if(isSpinnerTouched) {
                     if (getString(R.string.popular).equals(selectedOption)) {
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);

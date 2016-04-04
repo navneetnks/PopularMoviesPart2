@@ -6,6 +6,9 @@
     <dimen name="grid_spacing">10dp</dimen>
     <dimen name="column_width">200dp</dimen>
     <dimen name="minimum_height">100dp</dimen>
-    <dimen name="detail_image_dim">100dp</dimen>
+    <dimen name="detail_image_len">100dp</dimen>
+    <dimen name="detail_image_height">150dp</dimen>
     <dimen name="text_field_height">20dp</dimen>
+    <dimen name="font_size">16dp</dimen>
+    <dimen name="margin_gap">8dp</dimen>
 </resources>
