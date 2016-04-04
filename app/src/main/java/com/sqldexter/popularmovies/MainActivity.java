@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+    private static final String TAG=MainActivity.class.getSimpleName();
     private GridView movieGrid;
     private ImageAdapter imageAdapter;
     private Activity activity;
@@ -33,11 +34,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private volatile JSONObject jsonObject;
     private Bundle savedInstance;
     private int spinnerPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         savedInstance=savedInstanceState;
+
         activity=this;
         movieGrid=(GridView)findViewById(R.id.movieGrid);
         movieGrid.setOnItemClickListener(this);
@@ -48,13 +51,35 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortBySpinner.setAdapter(adapter);
-        sortBySpinner.setSelection(0);
+
+        // restoring status if it is saved else fetching data using API
+        if(savedInstance==null || !savedInstance.containsKey("movieList")){
+            new TaskThread(true).execute();
+            Toast.makeText(this,"API called",Toast.LENGTH_SHORT).show();
+        }
+        else {
+//            sortBySpinner.setSelection(savedInstance.getInt("spinnerPosition"));
+            try {
+                jsonObject=new JSONObject(savedInstance.getString("movieList"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            displayData();
+            Toast.makeText(this, "Status Restored", Toast.LENGTH_SHORT).show();
+        }
         sortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            int check=0;
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedOption = parent.getItemAtPosition(position).toString();
+                Log.d(TAG,"selectedOption="+selectedOption);
                 spinnerPosition=position;
-                if(savedInstance==null) {
+                check++;
+                if(check==1 && position==1)
+                    check--;
+
+                Log.d(TAG,"check="+check+"\tposition="+position);
+                if(check>1) {
                     if (getString(R.string.popular).equals(selectedOption)) {
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);
@@ -66,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                     }
                     Toast.makeText(activity, "selectedOption=" + selectedOption, Toast.LENGTH_SHORT).show();
                 }
-
-
             }
 
             @Override
@@ -81,19 +104,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     protected void onResume() {
         super.onResume();
-        if(savedInstance==null || !savedInstance.containsKey("movieList")){
-            new TaskThread(true).execute();
-        }
-        else {
-            sortBySpinner.setSelection(savedInstance.getInt("spinnerPosition"));
-            try {
-                jsonObject=new JSONObject(savedInstance.getString("movieList"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            displayData();
-        }
-        savedInstance=null;
+
     }
 
     @Override
