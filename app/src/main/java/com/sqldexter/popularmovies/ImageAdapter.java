@@ -59,7 +59,7 @@ public class ImageAdapter extends BaseAdapter {
         String posterPath=null;
         try {
             item=itemArray.getJSONObject(position);
-            posterPath=item.get("poster_path").toString();
+            posterPath=item.getString("poster_path");
         } catch (JSONException e) {
             e.printStackTrace();
         }

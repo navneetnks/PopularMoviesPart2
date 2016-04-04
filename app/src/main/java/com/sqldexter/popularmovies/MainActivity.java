@@ -30,10 +30,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private static final String LOG_TAG=MainActivity.class.getSimpleName();
     private Spinner sortBySpinner;
     private ProgressBar progressBar;
+    private volatile JSONObject jsonObject;
+    private Bundle savedInstance;
+    private int spinnerPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        savedInstance=savedInstanceState;
         activity=this;
         movieGrid=(GridView)findViewById(R.id.movieGrid);
         movieGrid.setOnItemClickListener(this);
@@ -44,22 +48,25 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortBySpinner.setAdapter(adapter);
+        sortBySpinner.setSelection(0);
         sortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedOption = parent.getItemAtPosition(position).toString();
-                if (getString(R.string.popular).equals(selectedOption)) {
-                    progressBar.setVisibility(ProgressBar.VISIBLE);
-                    movieGrid.setVisibility(View.INVISIBLE);
-                    new TaskThread(true).execute();
-                }
-                else{
-                    progressBar.setVisibility(ProgressBar.VISIBLE);
-                    movieGrid.setVisibility(View.INVISIBLE);
-                    new TaskThread(false).execute();
+                spinnerPosition=position;
+                if(savedInstance==null) {
+                    if (getString(R.string.popular).equals(selectedOption)) {
+                        progressBar.setVisibility(ProgressBar.VISIBLE);
+                        movieGrid.setVisibility(View.INVISIBLE);
+                        new TaskThread(true).execute();
+                    } else {
+                        progressBar.setVisibility(ProgressBar.VISIBLE);
+                        movieGrid.setVisibility(View.INVISIBLE);
+                        new TaskThread(false).execute();
+                    }
+                    Toast.makeText(activity, "selectedOption=" + selectedOption, Toast.LENGTH_SHORT).show();
                 }
 
-                Toast.makeText(activity, "selectedOption=" + selectedOption, Toast.LENGTH_SHORT).show();
 
             }
 
@@ -68,7 +75,34 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             }
         });
-        new TaskThread(true).execute();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(savedInstance==null || !savedInstance.containsKey("movieList")){
+            new TaskThread(true).execute();
+        }
+        else {
+            sortBySpinner.setSelection(savedInstance.getInt("spinnerPosition"));
+            try {
+                jsonObject=new JSONObject(savedInstance.getString("movieList"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            displayData();
+        }
+        savedInstance=null;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if(jsonObject!=null) {
+            outState.putString("movieList", jsonObject.toString());
+            outState.putInt("spinnerPosition", spinnerPosition);
+        }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -96,27 +130,20 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent=new Intent(this,MovieDetail.class);
-        intent.putExtra("movieObj",view.getTag().toString());
+        intent.putExtra("movieObj", view.getTag().toString());
         startActivity(intent);
 //        Log.d(LOG_TAG, "clicked on item="+position);
     }
 
     private class TaskThread extends AsyncTask<Void,Void,Void>{
-        private JSONObject jsonObject=null;
+
         private boolean isPopular;
         public TaskThread(boolean isPopoular){
             this.isPopular=isPopoular;
         }
         @Override
         protected void onPostExecute(Void aVoid) {
-            try {
-                progressBar.setVisibility(ProgressBar.INVISIBLE);
-                movieGrid.setVisibility(View.VISIBLE);
-                imageAdapter=new ImageAdapter(activity,jsonObject.getJSONArray("results"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            movieGrid.setAdapter(imageAdapter);
+            displayData();
 
         }
 
@@ -140,5 +167,17 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
             return null;
         }
+    }
+    private void displayData(){
+        try {
+            progressBar.setVisibility(ProgressBar.INVISIBLE);
+            movieGrid.setVisibility(View.VISIBLE);
+            if(jsonObject!=null) {
+                imageAdapter = new ImageAdapter(activity, jsonObject.getJSONArray("results"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        movieGrid.setAdapter(imageAdapter);
     }
 }
