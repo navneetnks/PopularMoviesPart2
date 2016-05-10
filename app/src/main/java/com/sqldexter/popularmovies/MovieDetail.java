@@ -52,8 +52,8 @@ public class MovieDetail extends AppCompatActivity {
         }
         setTitle(title);
         Log.d(LOG_TAG, ""+movieObj);
-        new TaskThread(Constants.getVideoURL(movieId)).execute();
-        new TaskThread(Constants.getReviewsURL(movieId)).execute();
+        new TaskThread(Constants.getVideoURL(movieId),1).execute();
+        new TaskThread(Constants.getReviewsURL(movieId),2).execute();
 
     }
 
@@ -77,13 +77,19 @@ public class MovieDetail extends AppCompatActivity {
 
     private class TaskThread extends AsyncTask<Void,Void,Void> {
         private String url;
-        public TaskThread(String url){
+        private int callType=0;
+        private JSONObject jsonObject;
+        public TaskThread(String url,int callType){
             this.url=url;
+            this.callType=callType;
         }
         @Override
         protected void onPostExecute(Void aVoid) {
 
-
+            if(callType==1)
+                loadVideosUI(jsonObject);
+            else
+                loadReviewsUI(jsonObject);
         }
 
         @Override
@@ -93,7 +99,7 @@ public class MovieDetail extends AppCompatActivity {
             connectNetwork=new ConnectNetwork(url);
 
             try {
-                JSONObject jsonObject=connectNetwork.getJsonObjFromNetwork();
+                jsonObject=connectNetwork.getJsonObjFromNetwork();
                 Log.d(LOG_TAG,"jsonObject="+jsonObject.toString());
                 Log.d(LOG_TAG,"url="+url);
             } catch (IOException e) {

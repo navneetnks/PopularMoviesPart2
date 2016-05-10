@@ -64,6 +64,7 @@ public class TrailerAdapter extends BaseAdapter {
         item=(JSONObject) getItem(position);
         if(item!=null){
             viewHolder.tralerImage.setBackgroundColor(Color.BLACK);
+            viewHolder.tralerImage.setImageResource(R.drawable.pic);
             viewHolder.trailerText.setText("Trailer "+position);
         }
         return view;
