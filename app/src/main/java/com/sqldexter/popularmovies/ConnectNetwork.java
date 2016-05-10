@@ -24,7 +24,7 @@ public class ConnectNetwork {
     private static final String LOG_TAG=ConnectNetwork.class.getSimpleName();
     private String urlStr;
     private HttpURLConnection urlConnection;
-    ConnectNetwork(String urlStr){
+    public ConnectNetwork(String urlStr){
         this.urlStr=urlStr;
     }
     public JSONObject getJsonObjFromNetwork() throws IOException, JSONException {
