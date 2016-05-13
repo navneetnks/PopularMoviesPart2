@@ -28,7 +28,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/grid_spacing">
+        android:paddingTop="@dimen/grid_spacing"
+        android:id="@+id/ss">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -137,10 +138,18 @@
                 android:layout_below="@id/ll2"/>
             <ListView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_below="@id/your_id"
-                android:id="@+id/trailer_list"></ListView>
+                android:id="@+id/trailer_list"
+                ></ListView>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/trailer_list"
+                android:id="@+id/review_list"
+                ></ListView>
 
         </RelativeLayout>
     </ScrollView>
+
 </RelativeLayout>

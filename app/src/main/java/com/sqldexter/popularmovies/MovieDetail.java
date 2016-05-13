@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListViewCompat;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,7 +28,7 @@ public class MovieDetail extends AppCompatActivity {
     private ImageView imageView,imageBg;
     private TextView title,synopsis,rating,releaseDate;
     private JSONObject movieObj;
-    private ListView trailerLV;
+    private ListView trailerLV,reviewLV;
     private Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,7 @@ public class MovieDetail extends AppCompatActivity {
         rating=(TextView)findViewById(R.id.rating);
         releaseDate=(TextView)findViewById(R.id.release_date);
         trailerLV=(ListView)findViewById(R.id.trailer_list);
+        reviewLV=(ListView)findViewById(R.id.review_list);
         Intent i=getIntent();
         String title=null;
         String movieId=null;
@@ -124,6 +127,16 @@ public class MovieDetail extends AppCompatActivity {
         }
         TrailerAdapter trailerAdapter=new TrailerAdapter(data,context);
         trailerLV.setAdapter(trailerAdapter);
+        HelperUtility.setListViewHeightBasedOnChildren(trailerLV);
+
+        reviewLV.setAdapter(new TrailerAdapter(data,context));
+        HelperUtility.setListViewHeightBasedOnChildren(reviewLV);
+//        trailerLV.setOnTouchListener(new View.OnTouchListener() {
+//
+//            public boolean onTouch(View v, MotionEvent event) {
+//                return (event.getAction() == MotionEvent.ACTION_MOVE);
+//            }
+//        });
 
     }
     private void loadReviewsUI(JSONObject jsonObject){
