@@ -134,18 +134,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#000000"
-                android:id="@+id/your_id"
+                android:id="@+id/line"
                 android:layout_below="@id/ll2"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/trailer_top_bottom_margin"
+                android:layout_marginBottom="@dimen/trailer_top_bottom_margin"
+                android:text="@string/trailer_header"
+                android:layout_below="@id/line"
+                android:id="@+id/trailer_head"/>
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/your_id"
+                android:layout_below="@id/trailer_head"
                 android:id="@+id/trailer_list"
                 ></ListView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#000000"
+                android:id="@+id/line2"
+                android:layout_below="@id/trailer_list"
+                android:layout_marginTop="@dimen/trailer_top_bottom_margin" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/trailer_top_bottom_margin"
+                android:layout_marginBottom="@dimen/trailer_top_bottom_margin"
+                android:text="@string/review_header"
+                android:layout_below="@id/line2"
+                android:id="@+id/review_head"/>
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/trailer_list"
+                android:layout_below="@id/review_head"
                 android:id="@+id/review_list"
                 ></ListView>
 

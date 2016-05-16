@@ -1,7 +1,9 @@
 package com.sqldexter.popularmovies;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -128,9 +130,8 @@ public class MovieDetail extends AppCompatActivity {
         TrailerAdapter trailerAdapter=new TrailerAdapter(data,context);
         trailerLV.setAdapter(trailerAdapter);
         HelperUtility.setListViewHeightBasedOnChildren(trailerLV);
+        trailerLV.setOnItemClickListener(trailerAdapter);
 
-        reviewLV.setAdapter(new TrailerAdapter(data,context));
-        HelperUtility.setListViewHeightBasedOnChildren(reviewLV);
 //        trailerLV.setOnTouchListener(new View.OnTouchListener() {
 //
 //            public boolean onTouch(View v, MotionEvent event) {
@@ -140,6 +141,15 @@ public class MovieDetail extends AppCompatActivity {
 
     }
     private void loadReviewsUI(JSONObject jsonObject){
-
+        JSONArray data= null;
+        try {
+            data = jsonObject.getJSONArray("results");
+            Log.d(LOG_TAG,"TrailerData="+data);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        reviewLV.setAdapter(new ReviewAdapter(data,context));
+        HelperUtility.setListViewHeightBasedOnChildren(reviewLV);
     }
+
 }

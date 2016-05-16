@@ -1,13 +1,19 @@
 package com.sqldexter.popularmovies;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +22,8 @@ import org.json.JSONObject;
 /**
  * Created by navneet on 10/5/16.
  */
-public class TrailerAdapter extends BaseAdapter {
+public class TrailerAdapter extends BaseAdapter implements AdapterView.OnItemClickListener{
+    private static final String LOG_TAG=TrailerAdapter.class.getSimpleName();
     private JSONArray data;
     private Context context;
 
@@ -63,14 +70,42 @@ public class TrailerAdapter extends BaseAdapter {
         }
         item=(JSONObject) getItem(position);
         if(item!=null){
-            viewHolder.tralerImage.setBackgroundColor(Color.BLACK);
-            viewHolder.tralerImage.setImageResource(R.drawable.pic);
+//            viewHolder.tralerImage.setBackgroundColor(Color.BLACK);
+            viewHolder.tralerImage.setImageResource(R.drawable.play_button);
             viewHolder.trailerText.setText("Trailer "+position);
+            try {
+                viewHolder.id = item.getString("key");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
         return view;
     }
-    class ViewHolder{
+
+
+
+    static class ViewHolder{
         ImageView tralerImage;
         TextView trailerText;
+        String id;
+    }
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        ViewHolder viewHolder=(ViewHolder)view.getTag();
+//        Toast.makeText(context,"clicked on item that has id="+viewHolder.id,Toast.LENGTH_LONG).show();
+        watchYoutubeVideo(viewHolder.id);
+    }
+    private void watchYoutubeVideo(String id){
+        String url="http://www.youtube.com/watch?v="+id;
+        Log.d(LOG_TAG,"yrl="+url);
+        try {
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(url));
+            context.startActivity(intent);
+        }
     }
 }
