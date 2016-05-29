@@ -9,7 +9,7 @@
     <dimen name="detail_image_len">100dp</dimen>
     <dimen name="detail_image_height">150dp</dimen>
     <dimen name="text_field_height">20dp</dimen>
-    <dimen name="font_size">16dp</dimen>
+    <dimen name="font_size">16sp</dimen>
     <dimen name="margin_gap">8dp</dimen>
     <dimen name="trailer_top_bottom_margin">10dp</dimen>
 </resources>
