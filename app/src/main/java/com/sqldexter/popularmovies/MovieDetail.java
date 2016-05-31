@@ -1,22 +1,20 @@
 package com.sqldexter.popularmovies;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ListViewCompat;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.sqldexter.popularmovies.adapter.ReviewAdapter;
+import com.sqldexter.popularmovies.adapter.TrailerAdapter;
+import com.sqldexter.popularmovies.utility.SharedPref;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -32,6 +30,9 @@ public class MovieDetail extends AppCompatActivity {
     private JSONObject movieObj;
     private ListView trailerLV,reviewLV;
     private Context context;
+    private boolean isFavorite,buttonFavClicked;
+    private Button favButton;
+    private String movieId=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,9 +45,10 @@ public class MovieDetail extends AppCompatActivity {
         releaseDate=(TextView)findViewById(R.id.release_date);
         trailerLV=(ListView)findViewById(R.id.trailer_list);
         reviewLV=(ListView)findViewById(R.id.review_list);
+        favButton=(Button)findViewById(R.id.fav_button);
         Intent i=getIntent();
         String title=null;
-        String movieId=null;
+
         context=this;
         try {
             movieObj = new JSONObject(i.getStringExtra("movieObj"));
@@ -56,7 +58,22 @@ public class MovieDetail extends AppCompatActivity {
             e.printStackTrace();
         }
         setTitle(title);
-        Log.d(LOG_TAG, ""+movieObj);
+        Log.d(LOG_TAG, "" + movieObj);
+        isFavorite= SharedPref.movieSaved(this,movieId);
+        buttonFavClicked=isFavorite;
+        if(isFavorite)
+            favButton.setText("Favorite");
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!buttonFavClicked){
+                    favButton.setText("Favorite");
+                    SharedPref.saveMovieId(getBaseContext(), movieId);
+                    isFavorite=true;
+                    buttonFavClicked=true;
+                }
+            }
+        });
         new TaskThread(Constants.getVideoURL(movieId),1).execute();
         new TaskThread(Constants.getReviewsURL(movieId),2).execute();
 

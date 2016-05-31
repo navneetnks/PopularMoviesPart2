@@ -5,11 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ss"
-    tools:context="com.sqldexter.popularmovies.MovieDetail">
+    tools:context="com.sqldexter.popularmovies.MovieDetail"
+    android:background="@android:color/white">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+    android:layout_marginRight="@dimen/activity_horizontal_margin"
     >
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,8 +25,6 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:adjustViewBounds="true"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-
         android:layout_weight="2"
         />
         <LinearLayout
@@ -33,17 +33,22 @@
             android:layout_weight="3"
             android:orientation="vertical"
             android:layout_marginLeft="@dimen/activity_horizontal_margin">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mark favorite"
+                android:id="@+id/fav_button"/>
             <TextView
                 android:id="@+id/rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
+                android:text="rating"
                 android:textSize="@dimen/font_size" />
             <TextView
                 android:id="@+id/release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
+                android:text="date"
                 android:textSize="@dimen/font_size" />
 
         </LinearLayout>
@@ -56,15 +61,18 @@
                     android:layout_height="wrap_content"
 
                     android:textSize="@dimen/font_size"
-                    android:layout_below="@id/llImage"/>
+                    android:layout_below="@id/llImage"
+                    />
             <!--</LinearLayout>-->
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#000000"
+                android:background="@color/gray_line"
                 android:id="@+id/line"
-                android:layout_below="@id/synopsis"/>
+                android:layout_below="@id/synopsis"
+                android:layout_marginTop="@dimen/margin_gap"
+                />
 
             <TextView
                 android:layout_width="match_parent"
@@ -79,12 +87,16 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/trailer_head"
                 android:id="@+id/trailer_list"
+                android:divider="@color/gray_line"
+                android:dividerHeight="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 ></ListView>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="#000000"
+                android:background="@color/gray_line"
                 android:id="@+id/line2"
                 android:layout_below="@id/trailer_list"
                 android:layout_marginTop="@dimen/trailer_top_bottom_margin" />
@@ -102,6 +114,10 @@
                 android:layout_height="match_parent"
                 android:layout_below="@id/review_head"
                 android:id="@+id/review_list"
+                android:divider="@color/gray_line"
+                android:dividerHeight="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 ></ListView>
 
     </RelativeLayout>

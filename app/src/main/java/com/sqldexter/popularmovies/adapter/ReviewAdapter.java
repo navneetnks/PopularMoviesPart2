@@ -1,4 +1,4 @@
-package com.sqldexter.popularmovies;
+package com.sqldexter.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.sqldexter.popularmovies.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

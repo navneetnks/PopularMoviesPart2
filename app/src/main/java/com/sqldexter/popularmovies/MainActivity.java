@@ -1,8 +1,6 @@
 package com.sqldexter.popularmovies;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,6 +16,8 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.sqldexter.popularmovies.adapter.ImageAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;

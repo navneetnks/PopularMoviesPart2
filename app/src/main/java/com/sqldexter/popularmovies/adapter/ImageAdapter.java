@@ -1,4 +1,4 @@
-package com.sqldexter.popularmovies;
+package com.sqldexter.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.sqldexter.popularmovies.R;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;

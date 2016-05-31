@@ -1,10 +1,9 @@
-package com.sqldexter.popularmovies;
+package com.sqldexter.popularmovies.adapter;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +12,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.sqldexter.popularmovies.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
