@@ -1,12 +1,16 @@
 package com.sqldexter.popularmovies;
 
+
 import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -23,8 +27,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class MovieDetail extends AppCompatActivity {
-    private static final String LOG_TAG=MovieDetail.class.getSimpleName();
+/**
+ * Created by HOME on 04-06-2016.
+ */
+public class MovieDetailFragment extends Fragment {
+    private static final String LOG_TAG=MovieDetailFragment.class.getSimpleName();
+    static final String DETAIL_DATA="movieObj";
     private ImageView imageView,imageBg;
     private TextView title,synopsis,rating,releaseDate;
     private JSONObject movieObj;
@@ -33,34 +41,41 @@ public class MovieDetail extends AppCompatActivity {
     private boolean isFavorite,buttonFavClicked;
     private Button favButton;
     private String movieId=null;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_movie_detail);
-        imageView=(ImageView)findViewById(R.id.detail_image);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        imageView=(ImageView)rootView.findViewById(R.id.detail_image);
 //        imageBg=(ImageView)findViewById(R.id.detail_bg_image);
 //        title=(TextView)findViewById(R.id.title);
-        synopsis=(TextView)findViewById(R.id.synopsis);
-        rating=(TextView)findViewById(R.id.rating);
-        releaseDate=(TextView)findViewById(R.id.release_date);
-        trailerLV=(ListView)findViewById(R.id.trailer_list);
-        reviewLV=(ListView)findViewById(R.id.review_list);
-        favButton=(Button)findViewById(R.id.fav_button);
-        Intent i=getIntent();
-        String title=null;
+        synopsis=(TextView)rootView.findViewById(R.id.synopsis);
+        rating=(TextView)rootView.findViewById(R.id.rating);
+        releaseDate=(TextView)rootView.findViewById(R.id.release_date);
+        trailerLV=(ListView)rootView.findViewById(R.id.trailer_list);
+        reviewLV=(ListView)rootView.findViewById(R.id.review_list);
+        favButton=(Button)rootView.findViewById(R.id.fav_button);
 
-        context=this;
-        try {
-            movieObj = new JSONObject(i.getStringExtra("movieObj"));
-            title=movieObj.getString("original_title");
-            movieId=movieObj.getString("id");
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+        Bundle arguments = getArguments();
+        String data=null;
+        String title=null;
+        if (arguments != null) {
+            data = arguments.getString(MovieDetailFragment.DETAIL_DATA);
+            try {
+                movieObj = new JSONObject(data);
+                title=movieObj.getString("original_title");
+                movieId=movieObj.getString("id");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d(LOG_TAG, "" + movieObj);
+            isFavorite= SharedPref.movieSaved(getContext(), movieId);
+            buttonFavClicked=isFavorite;
         }
-        setTitle(title);
-        Log.d(LOG_TAG, "" + movieObj);
-        isFavorite= SharedPref.movieSaved(this,movieId);
-        buttonFavClicked=isFavorite;
+
+
+//        setTitle(title);
+
         if(isFavorite)
             favButton.setText("Favorite");
         favButton.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +83,7 @@ public class MovieDetail extends AppCompatActivity {
             public void onClick(View v) {
                 if(!buttonFavClicked){
                     favButton.setText("Favorite");
-                    SharedPref.saveMovieId(getBaseContext(), movieId);
+                    SharedPref.saveMovieId(getContext(), movieId);
                     isFavorite=true;
                     buttonFavClicked=true;
                 }
@@ -76,27 +91,20 @@ public class MovieDetail extends AppCompatActivity {
         });
         new TaskThread(Constants.getVideoURL(movieId),1).execute();
         new TaskThread(Constants.getReviewsURL(movieId),2).execute();
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         try {
             releaseDate.setText(movieObj.getString("release_date"));
 //            title.setText(movieObj.getString("original_title"));
             String imageUrl="http://image.tmdb.org/t/p/w185"+movieObj.getString("poster_path");
             rating.setText(movieObj.getString("vote_average") +"/10");
             synopsis.setText(movieObj.getString("overview") );
-            Picasso.with(this).load(imageUrl).into(imageView);
+            Picasso.with(getContext()).load(imageUrl).into(imageView);
 //            imageBg.setAlpha(0.15f);
 //            Picasso.with(this).load(imageUrl).into(imageBg);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        return rootView;
     }
-
     private class TaskThread extends AsyncTask<Void,Void,Void> {
         private String url;
         private int callType=0;
@@ -144,7 +152,7 @@ public class MovieDetail extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        TrailerAdapter trailerAdapter=new TrailerAdapter(data,context);
+        TrailerAdapter trailerAdapter=new TrailerAdapter(data,getActivity());
         trailerLV.setAdapter(trailerAdapter);
         HelperUtility.setListViewHeightBasedOnChildren(trailerLV);
         trailerLV.setOnItemClickListener(trailerAdapter);
@@ -165,7 +173,7 @@ public class MovieDetail extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        reviewLV.setAdapter(new ReviewAdapter(data,context));
+        reviewLV.setAdapter(new ReviewAdapter(data,getActivity()));
         HelperUtility.setListViewHeightBasedOnChildren(reviewLV);
     }
 

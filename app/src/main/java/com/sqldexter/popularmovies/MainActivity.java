@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,101 +25,35 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements MovieFragment.Callback{
     private static final String TAG=MainActivity.class.getSimpleName();
-    private GridView movieGrid;
-    private ImageAdapter imageAdapter;
-    private Activity activity;
-    private static final String LOG_TAG=MainActivity.class.getSimpleName();
-    private Spinner sortBySpinner;
-    private ProgressBar progressBar;
-    private volatile JSONObject jsonObject;
-    private Bundle savedInstance;
-    private int spinnerPosition;
-    private boolean isSpinnerTouched=false;
-
+    private boolean mTwoPane;
+    private static final String DETAIL_FRAG_TAG="detail";
+    private Bundle savedInstanceState;
+    public static final String MOVIE_OBJECT_KEY="movieObj";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        savedInstance=savedInstanceState;
+        if (findViewById(R.id.movie_detail_container) != null) {
+            // The detail container view will be present only in the large-screen layouts
+            // (res/layout-sw600dp). If this view is present, then the activity should be
+            // in two-pane mode.
+            Log.d(TAG,"movie_detail_container is found");
+            mTwoPane = true;
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            this.savedInstanceState=savedInstanceState;
 
-        activity=this;
-        movieGrid=(GridView)findViewById(R.id.movieGrid);
-        movieGrid.setOnItemClickListener(this);
-        sortBySpinner=(Spinner)findViewById(R.id.sortBy);
-        progressBar=(ProgressBar)findViewById(R.id.apiProgressBar);
-        ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(this,R.array.sort_by_array,
-                android.R.layout.simple_spinner_dropdown_item);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        sortBySpinner.setAdapter(adapter);
-
-        // restoring status if it is saved else fetching data using API
-        if(savedInstance==null || !savedInstance.containsKey("movieList")){
-            new TaskThread(true).execute();
-            Toast.makeText(this,"API called",Toast.LENGTH_SHORT).show();
+        } else {
+            Log.d(TAG,"movie_detail_container is NOT found");
+            mTwoPane = false;
+//            getSupportActionBar().setElevation(0f);
         }
-        else {
-//            sortBySpinner.setSelection(savedInstance.getInt("spinnerPosition"));
-            try {
-                jsonObject=new JSONObject(savedInstance.getString("movieList"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            displayData();
-            Toast.makeText(this, "Status Restored", Toast.LENGTH_SHORT).show();
-        }
-        sortBySpinner.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                isSpinnerTouched=true;
-                return false;
-            }
-        });
-        sortBySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        MovieFragment forecastFragment =  ((MovieFragment)getSupportFragmentManager()
+                .findFragmentById(R.id.fragment_movie));
 
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedOption = parent.getItemAtPosition(position).toString();
-                Log.d(TAG,"selectedOption="+selectedOption);
-                spinnerPosition=position;
-
-                if(isSpinnerTouched) {
-                    if (getString(R.string.popular).equals(selectedOption)) {
-                        progressBar.setVisibility(ProgressBar.VISIBLE);
-                        movieGrid.setVisibility(View.INVISIBLE);
-                        new TaskThread(true).execute();
-                    } else {
-                        progressBar.setVisibility(ProgressBar.VISIBLE);
-                        movieGrid.setVisibility(View.INVISIBLE);
-                        new TaskThread(false).execute();
-                    }
-                    Toast.makeText(activity, "selectedOption=" + selectedOption, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if(jsonObject!=null) {
-            outState.putString("movieList", jsonObject.toString());
-            outState.putInt("spinnerPosition", spinnerPosition);
-        }
-        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -143,57 +78,38 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Intent intent=new Intent(this,MovieDetail.class);
-        intent.putExtra("movieObj", view.getTag().toString());
-        startActivity(intent);
-//        Log.d(LOG_TAG, "clicked on item="+position);
-    }
-
-    private class TaskThread extends AsyncTask<Void,Void,Void>{
-
-        private boolean isPopular;
-        public TaskThread(boolean isPopoular){
-            this.isPopular=isPopoular;
-        }
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            displayData();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            ConnectNetwork connectNetwork=null;
-            if(isPopular)
-                connectNetwork=new ConnectNetwork(Constants.POPULAR_MOVIE_URL);
-            else
-                connectNetwork=new ConnectNetwork(Constants.TOP_RATED_MOVIE_URL);
-            try {
-                jsonObject=connectNetwork.getJsonObjFromNetwork();
-                Log.d(LOG_TAG,"jsonObject="+jsonObject.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+    public void onItemSelected(String data) {
+        if(mTwoPane) {
+            if (savedInstanceState == null) {
+                Bundle args = new Bundle();
+                args.putString(MOVIE_OBJECT_KEY,data);
+                Fragment fragment=new MovieDetailFragment();
+                fragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.movie_detail_container, fragment, DETAIL_FRAG_TAG)
+                        .commit();
             }
-            finally {
-                connectNetwork.disconnect();
-            }
-            return null;
+        }
+        else{
+            Intent intent=new Intent(this,MovieDetailActivity.class);
+            intent.putExtra("movieObj", data);
+            startActivity(intent);
         }
     }
-    private void displayData(){
-        try {
-            progressBar.setVisibility(ProgressBar.INVISIBLE);
-            movieGrid.setVisibility(View.VISIBLE);
-            if(jsonObject!=null) {
-                imageAdapter = new ImageAdapter(activity, jsonObject.getJSONArray("results"));
+    @Override
+    public void onInitialization(String data){
+        if(mTwoPane) {
+            if (savedInstanceState == null) {
+                Bundle args = new Bundle();
+                args.putString(MOVIE_OBJECT_KEY,data);
+                Fragment fragment=new MovieDetailFragment();
+                fragment.setArguments(args);
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.movie_detail_container, fragment, DETAIL_FRAG_TAG)
+                        .commit();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
-        movieGrid.setAdapter(imageAdapter);
     }
 }
