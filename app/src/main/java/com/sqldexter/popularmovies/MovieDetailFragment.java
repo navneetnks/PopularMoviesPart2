@@ -72,7 +72,7 @@ public class MovieDetailFragment extends Fragment {
                 e.printStackTrace();
             }
             Log.d(LOG_TAG, "" + movieObj);
-            isFavorite= SharedPref.movieSaved(getContext(), movieId);
+            isFavorite= SharedPref.isMovieSaved(getContext(), movieId);
             buttonFavClicked=isFavorite;
         }
 
@@ -100,7 +100,7 @@ public class MovieDetailFragment extends Fragment {
             public void onClick(View v) {
                 if(!buttonFavClicked){
                     favButton.setText("Favorite");
-                    SharedPref.saveMovieId(getContext(), movieId);
+                    SharedPref.saveMovieId(getContext(), movieId,movieObj.toString());
                     isFavorite=true;
                     buttonFavClicked=true;
                 }

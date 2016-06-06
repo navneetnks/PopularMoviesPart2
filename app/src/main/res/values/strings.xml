@@ -3,10 +3,12 @@
     <string name="action_settings">Settings</string>
     <string name="spinner_title">Sort By</string>
     <string name="popular">Popular</string>
-    <string name="Rating">Rating</string>
+    <string name="rating">Rating</string>
+    <string name="favourite">Favorite</string>
     <string-array name="sort_by_array">
         <item>Popular</item>
         <item>Rating</item>
+        <item>Favorite</item>
     </string-array>
     <string name="title_activity_movie_detail">Movie Detail</string>
     <string name="title_label">Title</string>

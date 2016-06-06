@@ -19,11 +19,14 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.sqldexter.popularmovies.adapter.ImageAdapter;
+import com.sqldexter.popularmovies.utility.SharedPref;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by HOME on 04-06-2016.
@@ -39,6 +42,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
     private int spinnerPosition;
     private boolean isSpinnerTouched=false;
     private static final String MOVIE_DATA="mov_data";
+    private static final int POPULAR=0,RATING=1,FAVORITE=2;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,7 +68,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
             Log.d(LOG_TAG, "Instance restored");
         }
         else {
-            new TaskThread(true).execute();
+            new TaskThread(POPULAR).execute();
             Log.d(LOG_TAG, "API called");
         }
         sortBySpinner.setOnTouchListener(new View.OnTouchListener() {
@@ -86,11 +90,16 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
                     if (getString(R.string.popular).equals(selectedOption)) {
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);
-                        new TaskThread(true).execute();
-                    } else {
+                        new TaskThread(POPULAR).execute();
+                    } else if(getString(R.string.rating).equals(selectedOption)){
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);
-                        new TaskThread(false).execute();
+                        new TaskThread(RATING).execute();
+                    }else {
+                        // for favorite
+                        progressBar.setVisibility(ProgressBar.VISIBLE);
+                        movieGrid.setVisibility(View.INVISIBLE);
+                        new TaskThread(FAVORITE).execute();
                     }
                     Toast.makeText(getActivity(), "selectedOption=" + selectedOption, Toast.LENGTH_SHORT).show();
                 }
@@ -112,9 +121,9 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
     }
     private class TaskThread extends AsyncTask<Void,Void,Void> {
 
-        private boolean isPopular;
-        public TaskThread(boolean isPopoular){
-            this.isPopular=isPopoular;
+        private int requestType;
+        public TaskThread(int requestType){
+            this.requestType=requestType;
         }
         @Override
         protected void onPostExecute(Void aVoid) {
@@ -125,21 +134,44 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
 
         @Override
         protected Void doInBackground(Void... params) {
-            ConnectNetwork connectNetwork=null;
-            if(isPopular)
-                connectNetwork=new ConnectNetwork(Constants.POPULAR_MOVIE_URL);
-            else
-                connectNetwork=new ConnectNetwork(Constants.TOP_RATED_MOVIE_URL);
-            try {
-                jsonObject=connectNetwork.getJsonObjFromNetwork();
-                Log.d(LOG_TAG, "jsonObject=" + jsonObject.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+            if(requestType==FAVORITE){
+
+                    //favorite
+                    jsonObject=new JSONObject();
+                    JSONArray jsonArray=new JSONArray();
+                    Map<String,?> movieMap=SharedPref.getMovieMap(getContext());
+                    for(String key:movieMap.keySet()){
+                        try {
+                            jsonArray.put(new JSONObject(movieMap.get(key).toString()));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    try {
+                        jsonObject.put("results",jsonArray);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
             }
-            finally {
-                connectNetwork.disconnect();
+            else {
+                ConnectNetwork connectNetwork = null;
+                if (requestType == POPULAR)
+                    connectNetwork = new ConnectNetwork(Constants.POPULAR_MOVIE_URL);
+                else if (requestType == RATING)
+                    connectNetwork = new ConnectNetwork(Constants.TOP_RATED_MOVIE_URL);
+
+                try {
+                    jsonObject = connectNetwork.getJsonObjFromNetwork();
+                    Log.d(LOG_TAG, "jsonObject=" + jsonObject.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (connectNetwork != null)
+                        connectNetwork.disconnect();
+                }
             }
             return null;
         }
