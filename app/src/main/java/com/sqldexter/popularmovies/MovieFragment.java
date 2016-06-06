@@ -176,6 +176,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(MOVIE_DATA,jsonObject.toString());
+        if(jsonObject!=null)
+            outState.putString(MOVIE_DATA,jsonObject.toString());
     }
 }

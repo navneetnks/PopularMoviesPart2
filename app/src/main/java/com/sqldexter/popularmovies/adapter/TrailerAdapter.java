@@ -72,7 +72,7 @@ public class TrailerAdapter extends BaseAdapter implements AdapterView.OnItemCli
         if(item!=null){
 //            viewHolder.tralerImage.setBackgroundColor(Color.BLACK);
             viewHolder.tralerImage.setImageResource(R.drawable.play_button);
-            viewHolder.trailerText.setText("Trailer "+position);
+            viewHolder.trailerText.setText("Trailer "+(position+1));
             try {
                 viewHolder.id = item.getString("key");
             } catch (JSONException e) {

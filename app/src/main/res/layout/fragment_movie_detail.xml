@@ -50,8 +50,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="date"
-                android:textSize="@dimen/font_size"
-                android:layout_marginBottom="@dimen/margin_gap"/>
+                android:textSize="@dimen/title_text_size"
+                android:layout_marginBottom="@dimen/margin_gap"
+                />
             <TextView
                 android:id="@+id/rating"
                 android:layout_width="wrap_content"

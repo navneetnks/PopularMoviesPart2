@@ -78,7 +78,9 @@ public class MovieDetailFragment extends Fragment {
 
         try {
             title.setText(titleStr);
-            releaseDate.setText(movieObj.getString("release_date"));
+            String date=movieObj.getString("release_date");
+            if(date!=null)
+                releaseDate.setText(date.split("-")[0]);
 //            title.setText(movieObj.getString("original_title"));
             String imageUrl="http://image.tmdb.org/t/p/w185"+movieObj.getString("poster_path");
             rating.setText(movieObj.getString("vote_average") +"/10");
