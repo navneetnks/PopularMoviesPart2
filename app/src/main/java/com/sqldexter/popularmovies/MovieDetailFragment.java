@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sqldexter.popularmovies.adapter.ReviewAdapter;
 import com.sqldexter.popularmovies.adapter.TrailerAdapter;
@@ -41,6 +42,8 @@ public class MovieDetailFragment extends Fragment {
     private boolean isFavorite,buttonFavClicked;
     private Button favButton;
     private String movieId=null;
+    private String jsonTrailerStr,jsonReviewsStr;
+    private static final String TRAILER_DATA="trailer_data",REVIEWS_DATA="review_data";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,16 +57,16 @@ public class MovieDetailFragment extends Fragment {
         trailerLV=(ListView)rootView.findViewById(R.id.trailer_list);
         reviewLV=(ListView)rootView.findViewById(R.id.review_list);
         favButton=(Button)rootView.findViewById(R.id.fav_button);
-
+        title=(TextView)rootView.findViewById(R.id.title);
 
         Bundle arguments = getArguments();
         String data=null;
-        String title=null;
+        String titleStr=null;
         if (arguments != null) {
             data = arguments.getString(MovieDetailFragment.DETAIL_DATA);
             try {
                 movieObj = new JSONObject(data);
-                title=movieObj.getString("original_title");
+                titleStr=movieObj.getString("original_title");
                 movieId=movieObj.getString("id");
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -73,7 +76,19 @@ public class MovieDetailFragment extends Fragment {
             buttonFavClicked=isFavorite;
         }
 
-
+        try {
+            title.setText(titleStr);
+            releaseDate.setText(movieObj.getString("release_date"));
+//            title.setText(movieObj.getString("original_title"));
+            String imageUrl="http://image.tmdb.org/t/p/w185"+movieObj.getString("poster_path");
+            rating.setText(movieObj.getString("vote_average") +"/10");
+            synopsis.setText(movieObj.getString("overview") );
+            Picasso.with(getContext()).load(imageUrl).into(imageView);
+//            imageBg.setAlpha(0.15f);
+//            Picasso.with(this).load(imageUrl).into(imageBg);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 //        setTitle(title);
 
         if(isFavorite)
@@ -87,22 +102,38 @@ public class MovieDetailFragment extends Fragment {
                     isFavorite=true;
                     buttonFavClicked=true;
                 }
+                else{
+                    Toast.makeText(getContext(),"Already marked as favorite",Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        new TaskThread(Constants.getVideoURL(movieId),1).execute();
-        new TaskThread(Constants.getReviewsURL(movieId),2).execute();
-        try {
-            releaseDate.setText(movieObj.getString("release_date"));
-//            title.setText(movieObj.getString("original_title"));
-            String imageUrl="http://image.tmdb.org/t/p/w185"+movieObj.getString("poster_path");
-            rating.setText(movieObj.getString("vote_average") +"/10");
-            synopsis.setText(movieObj.getString("overview") );
-            Picasso.with(getContext()).load(imageUrl).into(imageView);
-//            imageBg.setAlpha(0.15f);
-//            Picasso.with(this).load(imageUrl).into(imageBg);
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+        // trailer data restore if saved
+        if(savedInstanceState!=null && savedInstanceState.containsKey(TRAILER_DATA)){
+            try {
+                jsonTrailerStr=savedInstanceState.getString(TRAILER_DATA);
+                JSONObject trailerJson=new JSONObject(jsonTrailerStr);
+                loadVideosUI(trailerJson);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
+        else
+            new TaskThread(Constants.getVideoURL(movieId),1).execute();
+
+        // Review data restore if saved
+        if(savedInstanceState!=null && savedInstanceState.containsKey(REVIEWS_DATA)) {
+            try {
+                jsonReviewsStr=savedInstanceState.getString(REVIEWS_DATA);
+                JSONObject reviewJson=new JSONObject(jsonReviewsStr);
+                loadReviewsUI(reviewJson);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else
+            new TaskThread(Constants.getReviewsURL(movieId),2).execute();
+
         return rootView;
     }
     private class TaskThread extends AsyncTask<Void,Void,Void> {
@@ -116,10 +147,14 @@ public class MovieDetailFragment extends Fragment {
         @Override
         protected void onPostExecute(Void aVoid) {
 
-            if(callType==1)
+            if(callType==1) {
                 loadVideosUI(jsonObject);
-            else
+                jsonTrailerStr=jsonObject.toString();
+            }
+            else {
                 loadReviewsUI(jsonObject);
+                jsonReviewsStr=jsonObject.toString();
+            }
         }
 
         @Override
@@ -177,4 +212,10 @@ public class MovieDetailFragment extends Fragment {
         HelperUtility.setListViewHeightBasedOnChildren(reviewLV);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(TRAILER_DATA,jsonTrailerStr);
+        outState.putString(REVIEWS_DATA,jsonReviewsStr);
+
+    }
 }

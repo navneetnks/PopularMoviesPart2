@@ -15,4 +15,6 @@
     <string name="release_date_label">Release Date</string>
     <string name="trailer_header">Trailer: </string>
     <string name="review_header">Reviews: </string>
+    <string name="mark_fav">Mark as Favorite</string>
+    <string name="fav">Favorite</string>
 </resources>

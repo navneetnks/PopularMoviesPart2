@@ -38,6 +38,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
 
     private int spinnerPosition;
     private boolean isSpinnerTouched=false;
+    private static final String MOVIE_DATA="mov_data";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,9 +53,20 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sortBySpinner.setAdapter(adapter);
         // restoring status if it is saved else fetching data using API
-
+        if(savedInstanceState!=null && savedInstanceState.containsKey(MOVIE_DATA))
+        {
+            try {
+                jsonObject=new JSONObject(savedInstanceState.getString(MOVIE_DATA));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            displayData();
+            Log.d(LOG_TAG, "Instance restored");
+        }
+        else {
             new TaskThread(true).execute();
-            Toast.makeText(getActivity(), "API called", Toast.LENGTH_SHORT).show();
+            Log.d(LOG_TAG, "API called");
+        }
         sortBySpinner.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -107,16 +119,7 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
         @Override
         protected void onPostExecute(Void aVoid) {
             displayData();
-            String data=null;
-            if(jsonObject!=null) {
-                try {
-                    data = jsonObject.getJSONArray("results").getString(0);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-           if(data!=null)
-            ((Callback)getActivity()).onInitialization(data);
+
 
         }
 
@@ -152,6 +155,16 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
             e.printStackTrace();
         }
         movieGrid.setAdapter(imageAdapter);
+        String data=null;
+        if(jsonObject!=null) {
+            try {
+                data = jsonObject.getJSONArray("results").getString(0);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        if(data!=null)
+            ((Callback)getActivity()).onInitialization(data);
     }
     public interface Callback {
         /**
@@ -159,5 +172,10 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
          */
         public void onItemSelected(String data);
         public void onInitialization(String data);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(MOVIE_DATA,jsonObject.toString());
     }
 }
