@@ -19,4 +19,6 @@
     <string name="review_header">Reviews: </string>
     <string name="mark_fav">Mark as Favorite</string>
     <string name="fav">Favorite</string>
+    <string name="error_message">Unable to fetch data from server.</string>
+    <string name="empty_message">No data available.</string>
 </resources>

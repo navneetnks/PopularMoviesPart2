@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sqldexter.popularmovies.ConnectNetwork;
@@ -50,6 +51,9 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
         View rootView = inflater.inflate(R.layout.content_main, container, false);
         movieGrid=(GridView)rootView.findViewById(R.id.movieGrid);
         movieGrid.setOnItemClickListener(this);
+        TextView emptyTextView=(TextView)rootView.findViewById(R.id.empty_list_view);
+        emptyTextView.setText(getString(R.string.error_message));
+        movieGrid.setEmptyView(emptyTextView);
         sortBySpinner=(Spinner)rootView.findViewById(R.id.sortBy);
         progressBar=(ProgressBar)rootView.findViewById(R.id.apiProgressBar);
         ArrayAdapter<CharSequence> adapter=ArrayAdapter.createFromResource(getActivity(),R.array.sort_by_array,
@@ -89,15 +93,18 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
 
                 if (isSpinnerTouched) {
                     if (getString(R.string.popular).equals(selectedOption)) {
+                        jsonObject=null;
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);
                         new TaskThread(POPULAR).execute();
                     } else if(getString(R.string.rating).equals(selectedOption)){
+                        jsonObject=null;
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);
                         new TaskThread(RATING).execute();
                     }else {
                         // for favorite
+//                        jsonObject=null;
                         progressBar.setVisibility(ProgressBar.VISIBLE);
                         movieGrid.setVisibility(View.INVISIBLE);
                         new TaskThread(FAVORITE).execute();
@@ -184,6 +191,8 @@ public class MovieFragment extends Fragment implements AdapterView.OnItemClickLi
             if(jsonObject!=null) {
                 imageAdapter = new ImageAdapter(getActivity(), jsonObject.getJSONArray("results"));
             }
+            else
+                imageAdapter = new ImageAdapter(getActivity(),new JSONArray());
         } catch (JSONException e) {
             e.printStackTrace();
         }

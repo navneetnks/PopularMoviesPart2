@@ -112,10 +112,16 @@
                 android:id="@+id/trailer_head"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/trailer_ll"
+                android:orientation="vertical"
+                android:layout_below="@id/trailer_head">
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@id/trailer_head"
+
                 android:id="@+id/trailer_list"
                 android:divider="@color/gray_line"
                 android:dividerHeight="1dp"
@@ -126,11 +132,23 @@
                 ></ListView>
 
             <TextView
+                android:id="@+id/trailer_lv_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/error_message"
+                android:visibility="gone"
+                android:layout_below="@id/trailer_list"
+                android:gravity="center"
+                android:textSize="@dimen/error_message_text_size"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"/>
+            </LinearLayout>
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/gray_line"
                 android:id="@+id/line2"
-                android:layout_below="@id/trailer_list"
+                android:layout_below="@id/trailer_ll"
                 android:layout_marginTop="@dimen/trailer_top_bottom_margin"
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"/>
@@ -157,6 +175,17 @@
                 android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
                 ></ListView>
+    <TextView
+        android:id="@+id/review_lv_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/error_message"
+        android:visibility="gone"
+        android:layout_below="@id/review_list"
+        android:gravity="center"
+        android:textSize="@dimen/error_message_text_size"
+        />
 
-    </RelativeLayout>
+
+</RelativeLayout>
 </ScrollView>

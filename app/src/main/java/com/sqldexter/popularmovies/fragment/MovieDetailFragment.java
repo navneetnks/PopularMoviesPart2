@@ -37,7 +37,7 @@ public class MovieDetailFragment extends Fragment {
     private static final String LOG_TAG=MovieDetailFragment.class.getSimpleName();
     public static final String DETAIL_DATA="movieObj";
     private ImageView imageView,imageBg;
-    private TextView title,synopsis,rating,releaseDate;
+    private TextView title,synopsis,rating,releaseDate,trailerEmpty,reviewEmpty;
     private JSONObject movieObj;
     private ListView trailerLV,reviewLV;
     private Context context;
@@ -60,6 +60,10 @@ public class MovieDetailFragment extends Fragment {
         reviewLV=(ListView)rootView.findViewById(R.id.review_list);
         favButton=(Button)rootView.findViewById(R.id.fav_button);
         title=(TextView)rootView.findViewById(R.id.title);
+        trailerEmpty=(TextView)rootView.findViewById(R.id.trailer_lv_empty);
+//        reviewEmpty=(TextView)rootView.findViewById(R.id.review_lv_empty);
+        trailerLV.setEmptyView(trailerEmpty);
+//        reviewLV.setEmptyView(reviewEmpty);
 
         Bundle arguments = getArguments();
         String data=null;
@@ -87,7 +91,7 @@ public class MovieDetailFragment extends Fragment {
             String imageUrl="http://image.tmdb.org/t/p/w185"+movieObj.getString("poster_path");
             rating.setText(movieObj.getString("vote_average") +"/10");
             synopsis.setText(movieObj.getString("overview") );
-            Picasso.with(getContext()).load(imageUrl).into(imageView);
+            Picasso.with(getContext()).load(imageUrl).placeholder(R.drawable.no_image_available).error(R.drawable.img_not_found).into(imageView);
 //            imageBg.setAlpha(0.15f);
 //            Picasso.with(this).load(imageUrl).into(imageBg);
         } catch (JSONException e) {
@@ -153,11 +157,17 @@ public class MovieDetailFragment extends Fragment {
 
             if(callType==1) {
                 loadVideosUI(jsonObject);
-                jsonTrailerStr=jsonObject.toString();
+                if(jsonObject!=null)
+                    jsonTrailerStr=jsonObject.toString();
+                else
+                    jsonTrailerStr=null;
             }
             else {
                 loadReviewsUI(jsonObject);
-                jsonReviewsStr=jsonObject.toString();
+                if(jsonObject!=null)
+                    jsonReviewsStr=jsonObject.toString();
+                else
+                    jsonReviewsStr=null;
             }
         }
 
@@ -186,7 +196,10 @@ public class MovieDetailFragment extends Fragment {
     private void loadVideosUI(JSONObject jsonObject){
         JSONArray data= null;
         try {
-            data = jsonObject.getJSONArray("results");
+            if(jsonObject!=null)
+                data = jsonObject.getJSONArray("results");
+            else
+                data=new JSONArray();
             Log.d(LOG_TAG,"TrailerData="+data);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -207,8 +220,11 @@ public class MovieDetailFragment extends Fragment {
     private void loadReviewsUI(JSONObject jsonObject){
         JSONArray data= null;
         try {
-            data = jsonObject.getJSONArray("results");
-            Log.d(LOG_TAG,"TrailerData="+data);
+            if(jsonObject!=null)
+                data = jsonObject.getJSONArray("results");
+            else
+                data=new JSONArray();
+            Log.d(LOG_TAG,"Review Data="+data);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -218,8 +234,10 @@ public class MovieDetailFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString(TRAILER_DATA,jsonTrailerStr);
-        outState.putString(REVIEWS_DATA,jsonReviewsStr);
+        if(jsonTrailerStr!=null)
+            outState.putString(TRAILER_DATA,jsonTrailerStr);
+        if(jsonReviewsStr!=null)
+            outState.putString(REVIEWS_DATA,jsonReviewsStr);
 
     }
 }
