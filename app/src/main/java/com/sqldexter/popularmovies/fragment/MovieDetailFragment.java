@@ -1,11 +1,9 @@
-package com.sqldexter.popularmovies;
+package com.sqldexter.popularmovies.fragment;
 
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +15,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sqldexter.popularmovies.ConnectNetwork;
+import com.sqldexter.popularmovies.Constants;
+import com.sqldexter.popularmovies.utility.HelperUtility;
+import com.sqldexter.popularmovies.R;
 import com.sqldexter.popularmovies.adapter.ReviewAdapter;
 import com.sqldexter.popularmovies.adapter.TrailerAdapter;
 import com.sqldexter.popularmovies.utility.SharedPref;
@@ -33,7 +35,7 @@ import java.io.IOException;
  */
 public class MovieDetailFragment extends Fragment {
     private static final String LOG_TAG=MovieDetailFragment.class.getSimpleName();
-    static final String DETAIL_DATA="movieObj";
+    public static final String DETAIL_DATA="movieObj";
     private ImageView imageView,imageBg;
     private TextView title,synopsis,rating,releaseDate;
     private JSONObject movieObj;

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ss"
-    tools:context=".MovieDetailActivity"
+    tools:context=".activity.MovieDetailActivity"
     android:background="@android:color/white">
 <RelativeLayout
     android:layout_width="match_parent"

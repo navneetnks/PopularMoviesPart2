@@ -1,7 +1,5 @@
-package com.sqldexter.popularmovies;
+package com.sqldexter.popularmovies.fragment;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +16,9 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.sqldexter.popularmovies.ConnectNetwork;
+import com.sqldexter.popularmovies.Constants;
+import com.sqldexter.popularmovies.R;
 import com.sqldexter.popularmovies.adapter.ImageAdapter;
 import com.sqldexter.popularmovies.utility.SharedPref;
 

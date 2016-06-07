@@ -1,31 +1,18 @@
-package com.sqldexter.popularmovies;
+package com.sqldexter.popularmovies.activity;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.ProgressBar;
-import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.sqldexter.popularmovies.adapter.ImageAdapter;
+import com.sqldexter.popularmovies.fragment.MovieDetailFragment;
+import com.sqldexter.popularmovies.fragment.MovieFragment;
+import com.sqldexter.popularmovies.R;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
-public class MainActivity extends AppCompatActivity implements MovieFragment.Callback{
+public class MainActivity extends AppCompatActivity implements MovieFragment.Callback {
     private static final String TAG=MainActivity.class.getSimpleName();
     private boolean mTwoPane;
     private static final String DETAIL_FRAG_TAG="detail";
@@ -82,19 +69,19 @@ public class MainActivity extends AppCompatActivity implements MovieFragment.Cal
     @Override
     public void onItemSelected(String data) {
         if(mTwoPane) {
-            if (savedInstanceState == null) {
-                Bundle args = new Bundle();
-                args.putString(MOVIE_OBJECT_KEY,data);
-                Fragment fragment=new MovieDetailFragment();
-                fragment.setArguments(args);
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.movie_detail_container, fragment, DETAIL_FRAG_TAG)
-                        .commit();
-            }
+
+            Bundle args = new Bundle();
+            args.putString(MOVIE_OBJECT_KEY,data);
+            Fragment fragment=new MovieDetailFragment();
+            fragment.setArguments(args);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.movie_detail_container, fragment, DETAIL_FRAG_TAG)
+                    .commit();
+
         }
         else{
             Intent intent=new Intent(this,MovieDetailActivity.class);
-            intent.putExtra("movieObj", data);
+            intent.putExtra(MOVIE_OBJECT_KEY, data);
             startActivity(intent);
         }
     }
