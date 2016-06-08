@@ -58,18 +58,19 @@ public class TrailerAdapter extends BaseAdapter implements AdapterView.OnItemCli
         ViewHolder viewHolder=null;
         JSONObject item=null;
         if(view==null){
-
-            view=((Activity)context).getLayoutInflater().inflate(R.layout.trailer_item,null);
-            viewHolder=new ViewHolder();
-            viewHolder.tralerImage=(ImageView) view.findViewById(R.id.trailer_image);
-            viewHolder.trailerText=(TextView) view.findViewById(R.id.trailer_text);
-            view.setTag(viewHolder);
+            if(context!=null) {
+                view = ((Activity) context).getLayoutInflater().inflate(R.layout.trailer_item, null);
+                viewHolder = new ViewHolder();
+                viewHolder.tralerImage = (ImageView) view.findViewById(R.id.trailer_image);
+                viewHolder.trailerText = (TextView) view.findViewById(R.id.trailer_text);
+                view.setTag(viewHolder);
+            }
         }
         else{
             viewHolder=(ViewHolder) view.getTag();
         }
         item=(JSONObject) getItem(position);
-        if(item!=null){
+        if(item!=null && viewHolder!=null){
 //            viewHolder.tralerImage.setBackgroundColor(Color.BLACK);
             viewHolder.tralerImage.setImageResource(R.drawable.play_button);
             viewHolder.trailerText.setText("Trailer "+(position+1));

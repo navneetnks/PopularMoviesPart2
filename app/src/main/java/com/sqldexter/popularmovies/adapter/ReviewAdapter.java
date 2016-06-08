@@ -52,18 +52,20 @@ public class ReviewAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         ViewHolder viewHolder=null;
         if(view==null){
-            view=((Activity)context).getLayoutInflater().inflate(R.layout.review_item,null);
-            viewHolder=new ViewHolder();
-            viewHolder.author=(TextView)view.findViewById(R.id.author);
-            viewHolder.content=(TextView)view.findViewById(R.id.content);
-            view.setTag(viewHolder);
+            if(context!=null) {
+                view = ((Activity) context).getLayoutInflater().inflate(R.layout.review_item, null);
+                viewHolder = new ViewHolder();
+                viewHolder.author = (TextView) view.findViewById(R.id.author);
+                viewHolder.content = (TextView) view.findViewById(R.id.content);
+                view.setTag(viewHolder);
+            }
         }
         else{
             viewHolder=(ViewHolder) view.getTag();
         }
         JSONObject item=null;
         item=(JSONObject) getItem(position);
-        if(item!=null){
+        if(item!=null && viewHolder!=null){
             try {
                 viewHolder.author.setText(item.getString("author"));
                 viewHolder.content.setText(item.getString("content"));
